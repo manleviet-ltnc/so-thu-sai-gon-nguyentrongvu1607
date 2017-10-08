@@ -16,7 +16,7 @@ namespace Sở_thú_sài_gòn
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            Application.Run(new frmSothusaigon());
         }
     }
 }

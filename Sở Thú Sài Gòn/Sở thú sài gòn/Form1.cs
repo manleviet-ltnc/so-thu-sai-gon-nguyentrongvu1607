@@ -10,12 +10,14 @@ using System.Windows.Forms;
 using System.IO;
 namespace Sở_thú_sài_gòn
 {
-    public partial class Form1 : Form
+    public partial class frmSothusaigon : Form
     {
-        public Form1()
+        public frmSothusaigon()
         {
             InitializeComponent();
         }
+        bool isChanged = false;
+        bool isSaved = true;
         // Bắt sự kiện khi ấn chuột vào
         private void MouseDown(object sender, MouseEventArgs e)
         {
@@ -37,10 +39,16 @@ namespace Sở_thú_sài_gòn
         private void DragDrop(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.Text))
-            {
-                ListBox lst = (ListBox)sender;
-                lst.Items.Add(e.Data.GetData(DataFormats.Text));
-            }
+                if (!lstDanhSachThu.Items.Contains(lstThuMoi.SelectedItem))
+                {
+                    int newIndex = lstDanhSachThu.IndexFromPoint(lstDanhSachThu.PointToClient(new Point(e.X, e.Y)));
+                    object selectedItem = e.Data.GetData(DataFormats.Text);
+                    if (newIndex != -1)
+                        lstDanhSachThu.Items.Insert(newIndex, selectedItem);
+                    else
+                        lstDanhSachThu.Items.Insert(lstDanhSachThu.Items.Count, selectedItem);
+                    isChanged = true;
+                }
         }
 
         private void Save(object sender, EventArgs e)
@@ -52,6 +60,7 @@ namespace Sở_thú_sài_gòn
             foreach (var item in lstDanhSachThu.Items)
                 write.WriteLine(item.ToString());
             write.Close();
+            isSaved = false;
         }
         private void mnuClose_Click(object sender, EventArgs e)
         {
@@ -64,10 +73,8 @@ namespace Sở_thú_sài_gòn
             if (reader == null)
                 return;
             string input;
-            while ((input = reader.ReadLine()) != null)
-            {
-                lstThuMoi.Items.Add(input);
-            }
+            while ((input = reader.ReadLine()) != null)          
+               lstThuMoi.Items.Add(input);          
             reader.Close();
             using (StreamReader rs = new StreamReader("danhsachthu.txt"))
             {
@@ -94,6 +101,38 @@ namespace Sở_thú_sài_gòn
         private void Form1_Load(object sender, EventArgs e)
         {
             timer1.Enabled = true;
+        }
+
+        private void Xoa(object sender, EventArgs e)
+        {
+            while(lstDanhSachThu.SelectedIndex!=-1)
+            lstDanhSachThu.Items.Remove(lstDanhSachThu.SelectedIndex);
+            isChanged = true;
+        }
+
+        private void frmSothusaigon_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (isChanged == true)
+            {
+                if (isSaved)
+                {
+                    DialogResult result = MessageBox.Show("Do you want to save Changes?", "", MessageBoxButtons.YesNoCancel,
+                                                                                        MessageBoxIcon.None
+                                                                                        );
+                    if (result == DialogResult.Yes)
+                    {
+                        Save(sender, e);
+                        e.Cancel = false;
+                    }
+                    else if (result == DialogResult.No)
+                        e.Cancel = false;
+                    else
+                        e.Cancel = true;
+                }
+            }
+            else
+                mnuClose_Click(sender, e);  
+
         }
     }
 
