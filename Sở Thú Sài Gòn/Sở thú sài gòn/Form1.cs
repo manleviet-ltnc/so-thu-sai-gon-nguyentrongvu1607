@@ -106,7 +106,7 @@ namespace Sở_thú_sài_gòn
         private void Xoa(object sender, EventArgs e)
         {
             while(lstDanhSachThu.SelectedIndex!=-1)
-            lstDanhSachThu.Items.Remove(lstDanhSachThu.SelectedIndex);
+            lstDanhSachThu.Items.RemoveAt(lstDanhSachThu.SelectedIndex);
             isChanged = true;
         }
 
