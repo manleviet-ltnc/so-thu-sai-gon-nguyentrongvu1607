@@ -130,8 +130,7 @@ namespace Sở_thú_sài_gòn
                         e.Cancel = true;
                 }
             }
-            else
-                mnuClose_Click(sender, e);  
+           
 
         }
     }
